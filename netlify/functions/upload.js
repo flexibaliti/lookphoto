@@ -8,6 +8,13 @@ cloudinary.config({
 });
 
 exports.handler = async function(event, context) {
+  // 输出环境变量状态（不输出具体值）
+  console.log('环境变量检查:', {
+    has_cloud_name: !!process.env.CLOUDINARY_CLOUD_NAME,
+    has_api_key: !!process.env.CLOUDINARY_API_KEY,
+    has_api_secret: !!process.env.CLOUDINARY_API_SECRET
+  });
+
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
@@ -22,6 +29,19 @@ exports.handler = async function(event, context) {
     if (!image || !image.startsWith('data:image')) {
       throw new Error('无效的图片数据');
     }
+
+    // 检查 Cloudinary 配置
+    if (!process.env.CLOUDINARY_CLOUD_NAME) {
+      throw new Error('未设置 CLOUDINARY_CLOUD_NAME');
+    }
+    if (!process.env.CLOUDINARY_API_KEY) {
+      throw new Error('未设置 CLOUDINARY_API_KEY');
+    }
+    if (!process.env.CLOUDINARY_API_SECRET) {
+      throw new Error('未设置 CLOUDINARY_API_SECRET');
+    }
+
+    console.log('开始上传到 Cloudinary...');
 
     // 上传图片到 Cloudinary 的 camera-app 文件夹
     const uploadResponse = await cloudinary.uploader.upload(image, {
@@ -41,12 +61,17 @@ exports.handler = async function(event, context) {
       })
     };
   } catch (error) {
-    console.error('上传错误:', error);
+    console.error('上传错误:', {
+      message: error.message,
+      stack: error.stack
+    });
+
     return {
       statusCode: 500,
       body: JSON.stringify({ 
         error: '上传失败',
-        message: error.message
+        message: error.message,
+        details: error.stack
       })
     };
   }
