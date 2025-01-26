@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>照片相册</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .photo-item {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .photo-item img {
+            max-width: 300px;
+            border-radius: 4px;
+        }
+        .photo-item .time {
+            color: #666;
+            font-size: 14px;
+            margin-top: 8px;
+            text-align: center;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .back-button {
+            display: inline-block;
+            margin: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-button">返回拍照</a>
+    <h1>已保存的照片</h1>
+    <div class="gallery" id="gallery">
+        <!-- 照片将通过 JavaScript 动态加载 -->
+    </div>
+    <script>
+        // 从 Cloudinary 加载照片
+        async function loadPhotos() {
+            try {
+                const response = await fetch('/api/list');
+                const data = await response.json();
+                const gallery = document.getElementById('gallery');
+                
+                data.photos.forEach(photo => {
+                    const div = document.createElement('div');
+                    div.className = 'photo-item';
+                    
+                    const img = document.createElement('img');
+                    img.src = photo.url;
+                    
+                    const time = document.createElement('div');
+                    time.className = 'time';
+                    time.textContent = new Date(photo.created_at).toLocaleString();
+                    
+                    div.appendChild(img);
+                    div.appendChild(time);
+                    gallery.appendChild(div);
+                });
+            } catch (error) {
+                console.error('加载照片失败:', error);
+            }
+        }
+
+        loadPhotos();
+    </script>
+</body>
+</html> 
