@@ -18,23 +18,36 @@ exports.handler = async function(event, context) {
   try {
     const { image } = JSON.parse(event.body);
     
-    // 上传图片到 Cloudinary
+    // 确保图片数据是有效的 base64
+    if (!image || !image.startsWith('data:image')) {
+      throw new Error('无效的图片数据');
+    }
+
+    // 上传图片到 Cloudinary 的 camera-app 文件夹
     const uploadResponse = await cloudinary.uploader.upload(image, {
-      folder: 'camera-app'
+      folder: 'camera-app',
+      resource_type: 'image',
+      format: 'jpg'
     });
+
+    console.log('上传成功:', uploadResponse.secure_url);
 
     return {
       statusCode: 200,
       body: JSON.stringify({
         success: true,
-        url: uploadResponse.secure_url
+        url: uploadResponse.secure_url,
+        public_id: uploadResponse.public_id
       })
     };
   } catch (error) {
     console.error('上传错误:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: '上传失败' })
+      body: JSON.stringify({ 
+        error: '上传失败',
+        message: error.message
+      })
     };
   }
 }; 
