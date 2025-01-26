@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>摄像头拍照</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        #video {
+            width: 640px;
+            height: 480px;
+            margin-bottom: 20px;
+        }
+        #photo {
+            max-width: 640px;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            display: none;
+        }
+        .message {
+            margin-top: 10px;
+            color: #666;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>摄像头拍照</h1>
+    <video id="video"></video>
+    <canvas id="canvas" style="display: none;"></canvas>
+    <img id="photo" alt="拍摄的照片">
+    <div class="message">正在等待摄像头权限...</div>
+    <script src="camera.js"></script>
+</body>
+</html> 
